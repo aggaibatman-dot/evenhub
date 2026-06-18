@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { PlusCircle, QrCode, X, Calendar, MapPin, Users, Clock, Share2 } from 'lucide-react';
+import { PlusCircle, QrCode, X, Calendar, MapPin, Share2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { motion, AnimatePresence } from 'framer-motion';
 import QRCode from 'react-qr-code';
@@ -15,7 +15,7 @@ const OrganizerDashboard = () => {
   const [shareEventId, setShareEventId] = useState(null);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [formData, setFormData] = useState({
-    title: '', description: '', category: 'Conference', venue: '', date: '', time: '', capacity: ''
+    title: '', description: '', category: 'Workshop', venue: '', date: '', time: '', capacity: ''
   });
   const [bannerImage, setBannerImage] = useState(null);
 
@@ -26,7 +26,6 @@ const OrganizerDashboard = () => {
   const fetchMyEvents = async () => {
     try {
       const { data } = await axios.get('/api/events');
-      // For now, fetch all events (should be filtered by backend based on token)
       setEvents(data);
     } catch (error) {
       toast.error('Failed to fetch events');
@@ -67,10 +66,7 @@ const OrganizerDashboard = () => {
 
   const containerVariants = {
     hidden: { opacity: 0 },
-    show: {
-      opacity: 1,
-      transition: { staggerChildren: 0.1 }
-    }
+    show: { opacity: 1, transition: { staggerChildren: 0.1 } }
   };
 
   const itemVariants = {
@@ -79,89 +75,89 @@ const OrganizerDashboard = () => {
   };
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 relative z-10 w-full max-w-7xl mx-auto">
       {/* Header */}
       <motion.div 
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="flex justify-between items-end bg-gradient-to-r from-violet-900/40 to-indigo-900/40 p-8 rounded-3xl border border-white/10 relative overflow-hidden"
+        className="glass-card flex flex-col md:flex-row justify-between items-start md:items-center p-8 md:p-12 relative overflow-hidden"
       >
-        <img src="/hero_background.png" alt="background" className="absolute inset-0 w-full h-full object-cover opacity-20 mix-blend-overlay pointer-events-none" />
-        <div className="relative z-10">
-          <h1 className="text-4xl font-extrabold text-white mb-2 tracking-tight">Organizer <span className="text-gradient">Dashboard</span></h1>
-          <p className="text-slate-300">Manage your upcoming spectacular events and check-in attendees.</p>
+        <div className="absolute top-0 right-0 w-96 h-96 bg-violet-600/30 blur-[100px] rounded-full pointer-events-none -translate-y-1/2 translate-x-1/3"></div>
+        <div className="relative z-10 mb-6 md:mb-0">
+          <div className="inline-flex items-center gap-2 glass-badge text-cyan-300 mb-4 glow-cyan">
+            <span>Organizer Console</span>
+          </div>
+          <h1 className="text-4xl md:text-5xl font-display font-extrabold text-white mb-3 tracking-tight">Event <span className="text-gradient">Command Center</span></h1>
+          <p className="text-slate-400 text-lg max-w-xl">Create spectacular events, manage registrations, and seamlessly check-in attendees.</p>
         </div>
-        <button onClick={() => setIsCreateModalOpen(true)} className="btn btn-primary relative z-10 shadow-xl">
-          <PlusCircle className="w-5 h-5 mr-2" />
-          Create Event
+        <button onClick={() => setIsCreateModalOpen(true)} className="btn btn-primary relative z-10 shadow-xl py-3 px-6 text-base group">
+          <PlusCircle className="w-5 h-5 mr-2 group-hover:rotate-90 transition-transform duration-300" />
+          Create New Event
         </button>
       </motion.div>
 
       {/* Events Grid */}
       {loading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {[1,2,3].map(n => <div key={n} className="h-64 bg-slate-200 dark:bg-slate-800 animate-pulse rounded-2xl"></div>)}
+          {[1,2,3].map(n => <div key={n} className="h-80 glass-card animate-pulse opacity-50"></div>)}
         </div>
       ) : events.length === 0 ? (
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="glass-card p-16 text-center">
-          <img src="/event_placeholder.png" alt="No events" className="w-64 h-48 object-cover rounded-xl mx-auto mb-6 shadow-2xl opacity-80" />
-          <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">No events created yet</h3>
-          <p className="text-slate-500 dark:text-slate-400 mb-8 max-w-md mx-auto">It's quiet here. Create your first event to start managing registrations and building your community.</p>
-          <button onClick={() => setIsCreateModalOpen(true)} className="btn btn-primary">Create Event</button>
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="glass-card p-16 text-center border-dashed border-2 border-white/10">
+          <div className="mx-auto bg-white/5 w-24 h-24 rounded-full flex items-center justify-center mb-6">
+            <Calendar className="w-12 h-12 text-slate-500" />
+          </div>
+          <h3 className="text-3xl font-display font-bold text-white mb-3">No events created yet</h3>
+          <p className="text-slate-400 mb-8 max-w-md mx-auto text-lg">It's quiet here. Create your first event to start managing registrations and building your community.</p>
+          <button onClick={() => setIsCreateModalOpen(true)} className="btn btn-primary text-base px-8 py-3">Create Event</button>
         </motion.div>
       ) : (
-        <motion.div 
-          variants={containerVariants}
-          initial="hidden"
-          animate="show"
-          className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6"
-        >
+        <motion.div variants={containerVariants} initial="hidden" animate="show" className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
           {events.map((event) => (
-            <motion.div key={event._id} variants={itemVariants} className="card group relative overflow-hidden">
-              <div className="h-48 relative overflow-hidden">
+            <motion.div key={event._id} variants={itemVariants} className="glass-card group overflow-hidden flex flex-col hover:-translate-y-2 hover:shadow-[0_20px_40px_rgba(0,0,0,0.3)] transition-all duration-500 border border-white/10">
+              <div className="h-56 relative overflow-hidden">
                 <img 
                   src={event.bannerImage ? `http://localhost:5000/${event.bannerImage.replace(/\\/g, '/')}` : "/event_placeholder.png"} 
                   alt={event.title} 
                   className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
                   onError={(e) => { e.target.src = "/event_placeholder.png" }}
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
-                <div className="absolute bottom-4 left-4 right-4">
-                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-violet-500 text-white shadow-lg mb-2">
+                <div className="absolute inset-0 bg-gradient-to-t from-[#0f0a2e]/90 via-[#0f0a2e]/40 to-transparent"></div>
+                <div className="absolute bottom-5 left-5 right-5">
+                  <span className="glass-badge bg-black/40 backdrop-blur-md border-white/20 text-white mb-3 shadow-lg inline-block">
                     {event.category}
                   </span>
-                  <h3 className="text-xl font-bold text-white line-clamp-1">{event.title}</h3>
+                  <h3 className="text-2xl font-display font-bold text-white line-clamp-1">{event.title}</h3>
                 </div>
               </div>
-              <div className="p-5 space-y-3">
-                <div className="flex items-center text-sm text-slate-500 dark:text-slate-400">
-                  <Calendar className="w-4 h-4 mr-2 text-violet-500" />
-                  {new Date(event.date).toLocaleDateString()} at {event.time}
+              <div className="p-6 flex flex-col flex-grow bg-white/[0.02]">
+                <div className="space-y-4 mb-6 text-sm text-slate-300">
+                  <div className="flex items-center">
+                    <div className="p-1.5 rounded-lg bg-violet-500/10 mr-3"><Calendar className="w-4 h-4 text-violet-400" /></div>
+                    {new Date(event.date).toLocaleDateString()} at {event.time}
+                  </div>
+                  <div className="flex items-center">
+                    <div className="p-1.5 rounded-lg bg-cyan-500/10 mr-3"><MapPin className="w-4 h-4 text-cyan-400" /></div>
+                    <span className="line-clamp-1">{event.venue}</span>
+                  </div>
                 </div>
-                <div className="flex items-center text-sm text-slate-500 dark:text-slate-400">
-                  <MapPin className="w-4 h-4 mr-2 text-violet-500" />
-                  {event.venue}
-                </div>
-                <div className="flex items-center justify-between pt-4 mt-4 border-t border-slate-100 dark:border-slate-800">
-                  <span className={`inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-medium ${
-                    event.status === 'Upcoming' ? 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900/50 dark:text-indigo-300' : 'bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-300'
-                  }`}>
+                <div className="flex items-center justify-between pt-5 mt-auto border-t border-white/10">
+                  <span className={`glass-badge ${event.status === 'Upcoming' ? 'text-cyan-400 border-cyan-500/30 bg-cyan-500/10' : 'text-emerald-400 border-emerald-500/30 bg-emerald-500/10'}`}>
                     {event.status || 'Upcoming'}
                   </span>
                   <div className="flex gap-2">
                     <button 
                       onClick={() => { setShareEventId(event._id); setIsShareModalOpen(true); }}
-                      className="p-2 rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 transition-colors"
+                      className="p-2.5 rounded-xl bg-white/5 text-slate-300 hover:bg-white/10 hover:text-white border border-white/10 transition-colors"
                       title="Show Registration QR"
                     >
                       <Share2 className="w-4 h-4" />
                     </button>
                     <button 
                       onClick={() => handleScanClick(event._id)}
-                      className="btn btn-secondary text-sm px-4 py-2 flex items-center hover:bg-violet-50 dark:hover:bg-violet-900/30 hover:text-violet-600 dark:hover:text-violet-300 transition-colors"
+                      className="btn bg-violet-500/20 text-violet-300 border border-violet-500/30 hover:bg-violet-500/30 hover:text-white transition-colors py-2 px-4 shadow-[0_0_15px_rgba(139,92,246,0.15)]"
                     >
                       <QrCode className="w-4 h-4 mr-2" />
-                      Scan QR
+                      Scan
                     </button>
                   </div>
                 </div>
@@ -175,24 +171,21 @@ const OrganizerDashboard = () => {
       <AnimatePresence>
         {isCreateModalOpen && (
           <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm"
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 glass-overlay"
           >
             <motion.div 
-              initial={{ scale: 0.95, opacity: 0, y: 20 }}
-              animate={{ scale: 1, opacity: 1, y: 0 }}
-              exit={{ scale: 0.95, opacity: 0, y: 20 }}
-              className="bg-white dark:bg-slate-900 rounded-3xl shadow-2xl w-full max-w-2xl overflow-hidden border border-slate-200 dark:border-slate-800"
+              initial={{ scale: 0.95, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.95, opacity: 0, y: 20 }}
+              className="glass-modal rounded-3xl w-full max-w-2xl overflow-hidden relative"
             >
-              <div className="flex justify-between items-center p-6 border-b border-slate-100 dark:border-slate-800">
-                <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Create New Event</h2>
-                <button onClick={() => setIsCreateModalOpen(false)} className="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 transition-colors">
+              <div className="absolute top-0 right-0 w-64 h-64 bg-violet-500/20 blur-[80px] pointer-events-none rounded-full"></div>
+              <div className="flex justify-between items-center p-6 border-b border-white/10 relative z-10">
+                <h2 className="text-2xl font-display font-bold text-white">Create New Event</h2>
+                <button onClick={() => setIsCreateModalOpen(false)} className="p-2 rounded-full hover:bg-white/10 text-slate-400 hover:text-white transition-colors">
                   <X className="w-5 h-5" />
                 </button>
               </div>
-              <form onSubmit={handleCreateEvent} className="p-6 space-y-5 max-h-[70vh] overflow-y-auto">
+              <form onSubmit={handleCreateEvent} className="p-6 space-y-5 max-h-[75vh] overflow-y-auto custom-scrollbar relative z-10">
                 <div>
                   <label className="label">Event Title</label>
                   <input type="text" className="input" required value={formData.title} onChange={e => setFormData({...formData, title: e.target.value})} placeholder="e.g. Tech Innovators 2026" />
@@ -204,11 +197,13 @@ const OrganizerDashboard = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                   <div>
                     <label className="label">Category</label>
-                    <select className="input" value={formData.category} onChange={e => setFormData({...formData, category: e.target.value})}>
-                      <option>Conference</option>
-                      <option>Workshop</option>
-                      <option>Hackathon</option>
-                      <option>Meetup</option>
+                    <select className="input appearance-none bg-transparent" value={formData.category} onChange={e => setFormData({...formData, category: e.target.value})}>
+                      <option className="dark:bg-slate-900 bg-white dark:text-white text-slate-900">Workshop</option>
+                      <option className="dark:bg-slate-900 bg-white dark:text-white text-slate-900">Seminar</option>
+                      <option className="dark:bg-slate-900 bg-white dark:text-white text-slate-900">Hackathon</option>
+                      <option className="dark:bg-slate-900 bg-white dark:text-white text-slate-900">Cultural</option>
+                      <option className="dark:bg-slate-900 bg-white dark:text-white text-slate-900">Technical</option>
+                      <option className="dark:bg-slate-900 bg-white dark:text-white text-slate-900">Sports</option>
                     </select>
                   </div>
                   <div>
@@ -229,12 +224,12 @@ const OrganizerDashboard = () => {
                   </div>
                   <div>
                     <label className="label">Banner Image</label>
-                    <input type="file" accept="image/*" className="block w-full text-sm text-slate-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100 dark:file:bg-slate-800 dark:file:text-violet-400 transition-colors" onChange={e => setBannerImage(e.target.files[0])} />
+                    <input type="file" accept="image/*" className="block w-full text-sm text-slate-400 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border file:border-white/10 file:text-sm file:font-semibold file:bg-white/5 file:text-violet-300 hover:file:bg-white/10 transition-colors cursor-pointer" onChange={e => setBannerImage(e.target.files[0])} />
                   </div>
                 </div>
-                <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex justify-end gap-3">
-                  <button type="button" onClick={() => setIsCreateModalOpen(false)} className="btn btn-secondary">Cancel</button>
-                  <button type="submit" className="btn btn-primary">Publish Event</button>
+                <div className="pt-6 mt-6 border-t border-white/10 flex justify-end gap-3">
+                  <button type="button" onClick={() => setIsCreateModalOpen(false)} className="btn btn-secondary py-2.5">Cancel</button>
+                  <button type="submit" className="btn btn-primary py-2.5">Publish Event</button>
                 </div>
               </form>
             </motion.div>
@@ -246,34 +241,24 @@ const OrganizerDashboard = () => {
       <AnimatePresence>
         {isShareModalOpen && shareEventId && (
           <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm"
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 glass-overlay"
           >
             <motion.div 
-              initial={{ scale: 0.95, opacity: 0, y: 20 }}
-              animate={{ scale: 1, opacity: 1, y: 0 }}
-              exit={{ scale: 0.95, opacity: 0, y: 20 }}
-              className="bg-white dark:bg-slate-900 rounded-3xl shadow-2xl p-8 max-w-sm w-full text-center border border-slate-200 dark:border-slate-800 relative"
+              initial={{ scale: 0.95, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.95, opacity: 0, y: 20 }}
+              className="glass-modal rounded-3xl p-10 max-w-sm w-full text-center relative overflow-hidden"
             >
-              <button onClick={() => { setIsShareModalOpen(false); setShareEventId(null); }} className="absolute top-4 right-4 p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 transition-colors">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-cyan-500/20 blur-[60px] rounded-full pointer-events-none"></div>
+              <button onClick={() => { setIsShareModalOpen(false); setShareEventId(null); }} className="absolute top-4 right-4 p-2 rounded-full hover:bg-white/10 text-slate-400 transition-colors z-10">
                 <X className="w-5 h-5" />
               </button>
-              <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-2">Registration QR</h2>
-              <p className="text-sm text-slate-500 dark:text-slate-400 mb-6">Have participants scan this code to jump directly to the registration page.</p>
-              <div className="bg-white p-4 rounded-2xl shadow-inner inline-block mx-auto mb-6">
-                <QRCode 
-                  value={`${window.location.origin}/events/${shareEventId}`} 
-                  size={200}
-                  level="H"
-                />
+              <h2 className="text-2xl font-display font-bold text-white mb-2 relative z-10">Registration QR</h2>
+              <p className="text-sm text-slate-400 mb-8 relative z-10">Have participants scan this code to jump directly to the registration page.</p>
+              <div className="bg-white p-4 rounded-2xl shadow-[0_0_40px_rgba(34,211,238,0.2)] inline-block mx-auto mb-8 relative z-10 glow-cyan">
+                <QRCode value={`${window.location.origin}/events/${shareEventId}`} size={200} level="H" />
               </div>
-              <button 
-                onClick={() => { setIsShareModalOpen(false); setShareEventId(null); }} 
-                className="btn btn-secondary w-full"
-              >
-                Close
+              <button onClick={() => { setIsShareModalOpen(false); setShareEventId(null); }} className="btn btn-secondary w-full relative z-10 py-3">
+                Done
               </button>
             </motion.div>
           </motion.div>

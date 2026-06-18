@@ -1,5 +1,10 @@
 import { PDFDocument, rgb, StandardFonts } from 'pdf-lib';
-import { v2 as cloudinary } from 'cloudinary';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 export const generateCertificatePDF = async (participantName, eventName, date, verificationCode) => {
   try {
@@ -62,22 +67,18 @@ export const generateCertificatePDF = async (participantName, eventName, date, v
 
     const pdfBytes = await pdfDoc.save();
 
-    // Upload PDF to Cloudinary
-    return new Promise((resolve, reject) => {
-      const uploadStream = cloudinary.uploader.upload_stream(
-        {
-          resource_type: 'raw',
-          folder: 'eventhub_certificates',
-          format: 'pdf',
-        },
-        (error, result) => {
-          if (error) reject(error);
-          else resolve(result.secure_url);
-        }
-      );
+    // Save locally instead of uploading to Cloudinary
+    const certsDir = path.join(__dirname, '..', 'uploads', 'certificates');
+    if (!fs.existsSync(certsDir)) {
+      fs.mkdirSync(certsDir, { recursive: true });
+    }
 
-      uploadStream.end(pdfBytes);
-    });
+    const filename = `cert_${verificationCode}.pdf`;
+    const filePath = path.join(certsDir, filename);
+    fs.writeFileSync(filePath, pdfBytes);
+
+    // Return a URL path that can be accessed via the static file server
+    return `/uploads/certificates/${filename}`;
   } catch (error) {
     console.error('Error generating certificate', error);
     throw new Error('Failed to generate certificate');

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { Calendar, MapPin, Users, Tag, ArrowLeft, CheckCircle } from 'lucide-react';
+import { Calendar, MapPin, Users, ArrowLeft, CheckCircle, Ticket } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useAuth } from '../../context/AuthContext';
 
@@ -20,9 +20,6 @@ const EventDetails = () => {
       try {
         const { data } = await axios.get(`/api/events/${id}`);
         setEvent(data);
-        
-        // If user is logged in, theoretically we'd check if they are already registered.
-        // For MVP frontend we'll assume not unless they click it, or we'd need an endpoint.
       } catch (error) {
         toast.error('Event not found');
         navigate('/events');
@@ -54,12 +51,12 @@ const EventDetails = () => {
 
   if (loading) {
     return (
-      <div className="w-full max-w-4xl mx-auto py-8 animate-pulse space-y-8">
-        <div className="h-64 bg-gray-200 dark:bg-slate-700 rounded-2xl w-full"></div>
-        <div className="h-8 bg-gray-200 dark:bg-slate-700 w-1/2 rounded"></div>
+      <div className="w-full max-w-5xl mx-auto py-8 animate-pulse space-y-8 relative z-10">
+        <div className="h-96 glass-card rounded-2xl w-full opacity-50"></div>
+        <div className="h-8 bg-white/10 w-1/2 rounded-lg"></div>
         <div className="space-y-4">
-          <div className="h-4 bg-gray-200 dark:bg-slate-700 w-full rounded"></div>
-          <div className="h-4 bg-gray-200 dark:bg-slate-700 w-full rounded"></div>
+          <div className="h-4 bg-white/10 w-full rounded-lg"></div>
+          <div className="h-4 bg-white/10 w-3/4 rounded-lg"></div>
         </div>
       </div>
     );
@@ -68,99 +65,117 @@ const EventDetails = () => {
   if (!event) return null;
 
   return (
-    <div className="w-full max-w-4xl mx-auto py-8 px-4 sm:px-6 animate-fade-in">
+    <div className="w-full max-w-5xl mx-auto py-8 px-4 sm:px-6 animate-fade-in relative z-10">
       <button 
         onClick={() => navigate('/events')}
-        className="flex items-center text-gray-500 hover:text-primary-600 dark:text-gray-400 dark:hover:text-primary-400 mb-6 transition-colors"
+        className="flex items-center text-slate-400 hover:text-white mb-6 transition-colors group"
       >
-        <ArrowLeft className="w-4 h-4 mr-2" />
+        <ArrowLeft className="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform" />
         Back to Events
       </button>
 
-      <div className="card overflow-hidden border-0 shadow-lg mb-8">
+      <div className="glass-card overflow-hidden border-0 shadow-2xl mb-8 relative">
+        <div className="absolute inset-0 bg-gradient-to-t from-[#080416] via-transparent to-transparent z-10 pointer-events-none"></div>
         {event.bannerImage ? (
           <div className="w-full h-64 md:h-96 relative">
-            <img src={event.bannerImage} alt={event.title} className="w-full h-full object-cover" />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-            <div className="absolute bottom-6 left-6 right-6">
-              <span className="px-3 py-1 bg-primary-600 text-white rounded-full text-xs font-bold uppercase tracking-wider mb-3 inline-block">
+            <img src={`http://localhost:5000/${event.bannerImage.replace(/\\/g, '/')}`} alt={event.title} className="w-full h-full object-cover" />
+            <div className="absolute bottom-6 left-6 right-6 z-20">
+              <span className="glass-badge bg-black/40 backdrop-blur-md border-white/20 text-white mb-4 inline-block">
                 {event.category}
               </span>
-              <h1 className="text-3xl md:text-5xl font-bold text-white mb-2">{event.title}</h1>
+              <h1 className="text-4xl md:text-6xl font-display font-extrabold text-white mb-2 drop-shadow-lg">{event.title}</h1>
             </div>
           </div>
         ) : (
-          <div className="w-full h-64 md:h-96 bg-gradient-to-br from-primary-600 to-indigo-900 flex flex-col justify-end p-6 md:p-10">
-            <span className="px-3 py-1 bg-white/20 text-white rounded-full text-xs font-bold uppercase tracking-wider mb-3 inline-block w-max">
-              {event.category}
-            </span>
-            <h1 className="text-3xl md:text-5xl font-bold text-white mb-2">{event.title}</h1>
+          <div className="w-full h-64 md:h-[400px] bg-gradient-to-br from-violet-900 to-cyan-900 flex flex-col justify-end p-6 md:p-10 relative overflow-hidden">
+            <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-30 mix-blend-overlay"></div>
+            <div className="z-20 relative">
+              <span className="glass-badge bg-white/10 backdrop-blur-md border-white/20 text-white mb-4 inline-block">
+                {event.category}
+              </span>
+              <h1 className="text-4xl md:text-6xl font-display font-extrabold text-white mb-2 drop-shadow-lg">{event.title}</h1>
+            </div>
           </div>
         )}
 
-        <div className="p-6 md:p-10 grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div className="md:col-span-2 space-y-6">
+        <div className="p-6 md:p-10 grid grid-cols-1 md:grid-cols-3 gap-10 relative z-20 bg-[#080416]/60 backdrop-blur-3xl border-t border-white/10">
+          <div className="md:col-span-2 space-y-8">
             <div>
-              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">About This Event</h3>
-              <p className="text-gray-600 dark:text-gray-300 leading-relaxed whitespace-pre-line">
+              <h3 className="text-2xl font-display font-bold text-white mb-4 flex items-center">
+                <Ticket className="w-6 h-6 mr-3 text-violet-400" /> About This Event
+              </h3>
+              <p className="text-slate-300 leading-relaxed whitespace-pre-line text-lg">
                 {event.description}
               </p>
             </div>
             
-            <div className="pt-6 border-t border-gray-100 dark:border-dark-border">
-              <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-3">Organizer</h3>
+            <div className="pt-8 border-t border-white/10">
+              <h3 className="text-xl font-display font-bold text-white mb-4">Organized By</h3>
               <div className="flex items-center">
-                <div className="w-12 h-12 bg-primary-100 dark:bg-primary-900 text-primary-600 dark:text-primary-400 rounded-full flex items-center justify-center font-bold text-xl mr-4">
+                <div className="w-14 h-14 bg-gradient-to-br from-violet-500 to-cyan-500 rounded-full flex items-center justify-center font-bold text-2xl text-white mr-4 shadow-lg shadow-violet-500/30">
                   {event.organizer?.name?.charAt(0) || 'O'}
                 </div>
                 <div>
-                  <p className="font-medium text-gray-900 dark:text-white">{event.organizer?.name || 'Organizer'}</p>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">Event Host</p>
+                  <p className="text-xl font-medium text-white">{event.organizer?.name || 'Organizer'}</p>
+                  <p className="text-sm text-violet-400 font-medium">Verified Event Host</p>
                 </div>
               </div>
             </div>
           </div>
 
           <div className="space-y-6">
-            <div className="card glass p-6 space-y-4">
+            <div className="glass-card p-6 space-y-6 border-white/10 bg-white/5 relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-cyan-500/10 blur-[40px] rounded-full pointer-events-none"></div>
+              
               <div className="flex items-start">
-                <Calendar className="w-5 h-5 text-primary-500 mr-3 mt-0.5" />
+                <div className="p-2 rounded-xl bg-violet-500/20 mr-4">
+                  <Calendar className="w-6 h-6 text-violet-400" />
+                </div>
                 <div>
-                  <p className="font-medium text-gray-900 dark:text-white">Date and Time</p>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">{new Date(event.date).toLocaleDateString()}</p>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">{event.time}</p>
+                  <p className="text-sm font-medium text-slate-400 mb-1">Date & Time</p>
+                  <p className="text-base text-white font-medium">{new Date(event.date).toLocaleDateString()}</p>
+                  <p className="text-base text-white font-medium">{event.time}</p>
                 </div>
               </div>
 
               <div className="flex items-start">
-                <MapPin className="w-5 h-5 text-primary-500 mr-3 mt-0.5" />
+                <div className="p-2 rounded-xl bg-cyan-500/20 mr-4">
+                  <MapPin className="w-6 h-6 text-cyan-400" />
+                </div>
                 <div>
-                  <p className="font-medium text-gray-900 dark:text-white">Location</p>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">{event.venue}</p>
+                  <p className="text-sm font-medium text-slate-400 mb-1">Location</p>
+                  <p className="text-base text-white font-medium">{event.venue}</p>
                 </div>
               </div>
 
               <div className="flex items-start">
-                <Users className="w-5 h-5 text-primary-500 mr-3 mt-0.5" />
+                <div className="p-2 rounded-xl bg-orange-500/20 mr-4">
+                  <Users className="w-6 h-6 text-orange-400" />
+                </div>
                 <div>
-                  <p className="font-medium text-gray-900 dark:text-white">Capacity</p>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">{event.capacity} seats available</p>
+                  <p className="text-sm font-medium text-slate-400 mb-1">Capacity</p>
+                  <p className="text-base text-white font-medium">{event.capacity} seats</p>
                 </div>
               </div>
             </div>
 
             {hasRegistered ? (
-              <div className="bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-800 rounded-xl p-4 flex items-center text-green-800 dark:text-green-300">
-                <CheckCircle className="w-6 h-6 mr-3 flex-shrink-0" />
-                <p className="font-medium">You are registered for this event.</p>
+              <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-2xl p-5 flex items-center text-emerald-400 shadow-[0_0_20px_rgba(52,211,153,0.15)] relative overflow-hidden">
+                <div className="absolute inset-0 bg-emerald-500/5 pulse-glow pointer-events-none"></div>
+                <CheckCircle className="w-8 h-8 mr-4 flex-shrink-0" />
+                <div>
+                  <p className="font-bold text-lg mb-0.5">Registered!</p>
+                  <p className="text-sm text-emerald-400/80">You're on the guest list.</p>
+                </div>
               </div>
             ) : (
               <button 
                 onClick={handleRegister} 
                 disabled={registering || event.status !== 'Published'}
-                className="btn btn-primary w-full py-4 text-lg font-bold shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all"
+                className="btn btn-primary w-full py-4 text-lg font-bold hover:scale-[1.02] shadow-[0_0_30px_rgba(139,92,246,0.3)] transition-all relative overflow-hidden group"
               >
-                {registering ? 'Processing...' : event.status !== 'Published' ? 'Not Available' : 'Register Now'}
+                <div className="absolute inset-0 bg-gradient-to-r from-violet-600 to-cyan-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <span className="relative z-10">{registering ? 'Processing...' : event.status !== 'Published' ? 'Not Available' : 'Secure Your Spot'}</span>
               </button>
             )}
           </div>

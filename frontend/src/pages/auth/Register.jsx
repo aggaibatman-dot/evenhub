@@ -48,14 +48,17 @@ const Register = () => {
   };
 
   return (
-    <div className="w-full max-w-md animate-fade-in my-8">
-      <div className="card glass p-8">
+    <div className="w-full max-w-md animate-fade-in my-8 relative z-10">
+      {/* Decorative background blob specifically for the register card */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-32 bg-cyan-500/20 blur-[60px] rounded-full -z-10" />
+
+      <div className="glass-card p-8">
         <div className="text-center mb-8">
-          <div className="mx-auto bg-primary-100 dark:bg-primary-900 w-16 h-16 rounded-full flex items-center justify-center mb-4">
-            <UserPlus className="w-8 h-8 text-primary-600 dark:text-primary-400" />
+          <div className="mx-auto bg-cyan-500/10 border border-cyan-500/20 glow-cyan w-16 h-16 rounded-full flex items-center justify-center mb-5">
+            <UserPlus className="w-8 h-8 text-cyan-400" />
           </div>
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Create Account</h2>
-          <p className="text-gray-500 dark:text-gray-400 mt-2">Join EventHub today</p>
+          <h2 className="text-3xl font-display font-bold text-white mb-2">Create Account</h2>
+          <p className="text-slate-400">Join EventHub today</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-5">
@@ -63,7 +66,7 @@ const Register = () => {
             <label className="label">Full Name</label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <User className="h-5 w-5 text-gray-400" />
+                <User className="h-5 w-5 text-slate-400" />
               </div>
               <input
                 type="text"
@@ -81,7 +84,7 @@ const Register = () => {
             <label className="label">Email Address</label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <Mail className="h-5 w-5 text-gray-400" />
+                <Mail className="h-5 w-5 text-slate-400" />
               </div>
               <input
                 type="email"
@@ -99,16 +102,16 @@ const Register = () => {
             <label className="label">Account Type</label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <Briefcase className="h-5 w-5 text-gray-400" />
+                <Briefcase className="h-5 w-5 text-slate-400" />
               </div>
               <select
                 name="role"
-                className="input pl-10 appearance-none"
+                className="input pl-10 appearance-none bg-transparent"
                 value={formData.role}
                 onChange={handleChange}
               >
-                <option value="Participant">Participant</option>
-                <option value="Organizer">Organizer</option>
+                <option value="Participant" className="dark:bg-slate-900 bg-white dark:text-white text-slate-900">Participant</option>
+                <option value="Organizer" className="dark:bg-slate-900 bg-white dark:text-white text-slate-900">Organizer</option>
               </select>
             </div>
           </div>
@@ -117,7 +120,7 @@ const Register = () => {
             <label className="label">Password</label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <Lock className="h-5 w-5 text-gray-400" />
+                <Lock className="h-5 w-5 text-slate-400" />
               </div>
               <input
                 type="password"
@@ -135,7 +138,7 @@ const Register = () => {
             <label className="label">Confirm Password</label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <Lock className="h-5 w-5 text-gray-400" />
+                <Lock className="h-5 w-5 text-slate-400" />
               </div>
               <input
                 type="password"
@@ -152,15 +155,15 @@ const Register = () => {
           <button
             type="submit"
             disabled={isLoading}
-            className="btn btn-primary w-full py-3 mt-4"
+            className="btn btn-primary w-full py-3 text-base mt-6"
           >
             {isLoading ? 'Creating account...' : 'Sign Up'}
           </button>
         </form>
 
-        <div className="mt-6 text-center text-sm text-gray-600 dark:text-gray-400">
+        <div className="mt-8 pt-6 border-t border-white/10 text-center text-sm text-slate-400">
           Already have an account?{' '}
-          <Link to="/login" className="text-primary-600 dark:text-primary-400 hover:underline font-medium">
+          <Link to="/login" className="text-cyan-400 hover:text-violet-400 transition-colors font-medium ml-1">
             Sign in
           </Link>
         </div>
